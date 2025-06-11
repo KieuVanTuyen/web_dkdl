@@ -390,6 +390,26 @@
       setupDropZone("cccdBackDropZone", "cccdBack", "cccdBackFileList");
       setupDropZone("otherDocsDropZone", "otherDocs", "otherDocsFileList");
 
+      // Hàm scroll mượt tới element
+      function smoothScrollTo(element) {
+        const headerOffset = 100; // Offset để tránh bị che bởi header
+        const elementPosition = element.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: "smooth"
+        });
+
+        // Focus vào input sau khi scroll
+        setTimeout(() => {
+          const input = element.querySelector("input, select, textarea");
+          if (input) {
+            input.focus();
+          }
+        }, 500); // Delay 500ms để đợi scroll hoàn thành
+      }
+
       // Hàm validate form
       function validateForm(event) {
         event.preventDefault();
@@ -736,12 +756,7 @@
         } else {
           // Nếu có lỗi, scroll tới lỗi đầu tiên
           if (firstError) {
-            firstError.scrollIntoView({ behavior: "smooth", block: "center" });
-            // Focus on the first input with error
-            const input = firstError.querySelector("input, select, textarea");
-            if (input) {
-              input.focus();
-            }
+            smoothScrollTo(firstError);
           }
           showNotification(
             "Vui lòng kiểm tra và điền đầy đủ các trường thông tin!",
