@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Ký Làm Đại Lý</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .ekyc-button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 15px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            width: 80%;
+            font-size: 16px;
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .ekyc-button:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .ekyc-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .ekyc-button i {
+            font-size: 20px;
+        }
+
+        .drop-zone-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .drop-zone-wrapper {
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .drop-zone {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .drop-zone-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .upload-icon {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 15px;
+        }
+
+        .drop-zone p {
+            margin: 5px 0;
+            color: #666;
+        }
+
+        .drop-zone .note {
+            font-size: 14px;
+            color: #888;
+        }
+
+        .choose-file-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            width: 120px;
+            height: 40px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .choose-file-btn:hover {
+            background: #45a049;
+        }
+
+        @media screen and (max-width: 768px) {
+            .choose-file-btn {
+                width: 120px;
+                height: 40px;
+                font-size: 14px;
+            }
+        }
+
+        .ekyc-button {
+            width: 100%;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Đang xử lý...</div>
+    </div>
+
+    <div class="banner">
+        <img class="banner-img" src="assets/img/banner.png" alt="Banner">
+    </div>
+
+    <div class="container">
+        <form id="agentForm" onsubmit="return validateForm(event)" novalidate>
+            <div class="form-header">
+                <h2>Đăng Ký Làm Đại Lý</h2>
+            </div>
+
+            <div class="form-section personal-info-section">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="fullName">Họ và Tên</label>
+                        <input type="text" id="fullName" name="fullName" placeholder="Nhập họ tên">
+                        <div class="error-message" id="fullNameError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="Nhập email, ví dụ: email@example.com">
+                        <div class="error-message" id="emailError"></div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="phone">Số Điện Thoại</label>
+                        <input type="tel" id="phone" name="phone" placeholder="Nhập số điện thoại, ví dụ 0123456789">
+                        <div class="error-message" id="phoneError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="taxCode">Mã Số Thuế</label>
+                        <input type="text" id="taxCode" name="taxCode" placeholder="Nhập mã số thuế">
+                        <div class="error-message" id="taxCodeError"></div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="idNumber">Số CCCD/CMND</label>
+                        <input type="text" id="idNumber" name="idNumber" placeholder="Nhập số CCCD/CMND">
+                        <div class="error-message" id="idNumberError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="agentType">Loại hình đại lý đăng ký:</label>
+                        <div class="select-wrapper">
+                            <select id="agentType" name="agentType">
+                                <option value="">-- Chọn loại hình --</option>
+                                <option value="individual">Cá nhân</option>
+                                <option value="pharmacy">Nhà thuốc</option>
+                                <option value="clinic">Phòng khám</option>
+                                <option value="chain">Chuỗi</option>
+                                <option value="supplier">Nhà cung cấp</option>
+                                <option value="hospital">Bệnh viện</option>
+                            </select>
+                        </div>
+                        <div class="error-message" id="agentTypeError"></div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="position">Chức vụ:</label>
+                        <input type="text" id="position" name="position" placeholder="Nhập chức vụ">
+                        <div class="error-message" id="positionError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="address">Địa Chỉ</label>
+                        <input type="text" id="address" name="address" placeholder="Nhập địa chỉ">
+                        <div class="error-message" id="addressError"></div>
+                    </div>
+                </div>
+
+                <div class="form-group full-width text-area-group">
+                    <label>Lưu ý quan trọng về giấy tờ cần thiết của từng loại đại lý</label>
+                    <textarea id="importantNotes" name="importantNotes" rows="7" readonly></textarea>
+                </div>
+            </div>
+
+            <div class="form-section document-upload-section">
+                <div class="form-row">
+                    <div class="form-group file-upload-group">
+                        <label>Ảnh CCCD/CMND:</label>
+                        <div class="drop-zone-container">
+                            <div class="drop-zone-wrapper">
+                                <label for="idCardInput">Kéo thả file ảnh căn cước công dân</label>
+                                <div class="drop-zone" id="idCardDropZone">
+                                    <input type="file" id="idCardInput" name="idCard" accept="image/*" hidden>
+                                    <div class="drop-zone-content">
+                                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'/%3E%3Cpolyline points='17 8 12 3 7 8'/%3E%3Cline x1='12' y1='3' x2='12' y2='15'/%3E%3C/svg%3E" alt="Upload" class="upload-icon">
+                                        <p>Kéo thả file hoặc <span class="browse-text">chọn file</span></p>
+                                        <p class="note">Định dạng: JPG, PNG (Tối đa 5MB)</p>
+                                    </div>
+                                    <button type="button" class="choose-file-btn">Chọn file</button>
+                                </div>
+                                <div class="file-list" id="idCardFileList"></div>
+                                <div class="error-message" id="idCardError"></div>
+                            </div>
+                            <button type="button" class="ekyc-button" onclick="openEKYC()">
+                                <i class="fas fa-id-card"></i> Xác thực eKYC
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group full-width file-upload-group">
+                    <label for="otherDocs">Các loại giấy tờ khác:</label>
+                    <div class="drop-zone" id="otherDocsDropZone">
+                        <input type="file" id="otherDocs" name="otherDocs" accept=".pdf,.jpg,.png" multiple hidden>
+                        <div class="drop-zone-content">
+                            <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'/%3E%3Cpolyline points='17 8 12 3 7 8'/%3E%3Cline x1='12' y1='3' x2='12' y2='15'/%3E%3C/svg%3E" alt="Upload" class="upload-icon">
+                            <p>Kéo thả file vào đây hoặc <span class="browse-text">chọn file</span></p>
+                            <p class="note">Định dạng: PDF, JPG, PNG (Tối đa 10MB)</p>
+                        </div>
+                        <div class="file-list" id="otherDocsFileList"></div>
+                        <div class="error-message" id="otherDocsError"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section note-and-submit-section">
+                <button type="submit" class="submit-button">Gửi đơn ngay</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="footer-info">
+        
+    </div>
+
+    <div id="notification" class="notification"></div>
+    <script>
+        // Đối tượng chứa nội dung lưu ý cho từng loại đại lý
+        const agentNotes = {
+            '': 'Chọn loại hình đại lý để xem lưu ý về giấy tờ.',
+            'individual': '- Giấy tờ cá nhân: CCCD/CMND (mặt trước và sau), ảnh chân dung.\n- Giấy phép kinh doanh (nếu có).\n- Xác nhận nơi cư trú.',
+            'pharmacy': '- Giấy phép kinh doanh nhà thuốc.\n- Chứng chỉ hành nghề dược của chủ nhà thuốc.\n- CCCD/CMND của chủ nhà thuốc.\n- Danh sách nhân viên (nếu có).',
+            'hospital': '- Giấy phép hoạt động bệnh viện.\n- Giấy phép kinh doanh (nếu có).\n- Danh sách bác sĩ và chứng chỉ hành nghề.\n- CCCD/CMND của người đại diện pháp luật.',
+            'supplier': '- Giấy phép kinh doanh.\n- Giấy chứng nhận đăng ký doanh nghiệp.\n- CCCD/CMND của người đại diện pháp luật.\n- Giấy chứng nhận đủ điều kiện sản xuất/kinh doanh.\n- Danh sách sản phẩm cung cấp.',
+            'chain': '- Giấy phép kinh doanh của công ty mẹ.\n- Giấy chứng nhận đăng ký doanh nghiệp.\n- CCCD/CMND của người đại diện pháp luật.\n- Danh sách các chi nhánh.\n- Quyết định thành lập chi nhánh.',
+            'clinic': '- Giấy phép hoạt động phòng khám.\n- Giấy phép kinh doanh.\n- Chứng chỉ hành nghề của bác sĩ.\n- CCCD/CMND của người đại diện pháp luật.\n- Danh sách nhân viên y tế.'
+        };
+
+        // Cập nhật nội dung lưu ý khi chọn loại hình đại lý
+        document.addEventListener('DOMContentLoaded', () => {
+            const agentTypeSelect = document.getElementById('agentType');
+            const importantNotesTextarea = document.getElementById('importantNotes');
+
+            // Set initial content
+            importantNotesTextarea.value = agentNotes[agentTypeSelect.value];
+
+            agentTypeSelect.addEventListener('change', function() {
+                importantNotesTextarea.value = agentNotes[this.value];
+                this.blur(); // Tự động tắt focus sau khi chọn option
+            });
+        });
+
+        // Thêm hàm hiển thị thông báo
+        function showNotification(message, type = 'success', time = 3000) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+
+            // Tự động ẩn sau thời gian được chỉ định
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, time);
+        }
+
+        // Hàm xử lý kéo thả file
+        function setupDropZone(dropZoneId, inputId, fileListId) {
+            const dropZone = document.getElementById(dropZoneId);
+            const input = document.getElementById(inputId);
+            const fileList = document.getElementById(fileListId);
+
+            // Xử lý sự kiện kéo thả
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            // Thêm hiệu ứng khi kéo file vào
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight(e) {
+                dropZone.classList.add('highlight');
+            }
+
+            function unhighlight(e) {
+                dropZone.classList.remove('highlight');
+            }
+
+            // Xử lý khi thả file
+            dropZone.addEventListener('drop', handleDrop, false);
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                input.files = files;
+                handleFiles(files);
+            }
+
+            // Xử lý khi click vào vùng kéo thả
+            dropZone.addEventListener('click', () => {
+                input.click();
+            });
+
+            // Xử lý khi chọn file
+            input.addEventListener('change', function() {
+                handleFiles(this.files);
+            });
+
+            function handleFiles(files) {
+                fileList.innerHTML = '';
+                [...files].forEach(file => {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'file-item';
+                    fileItem.innerHTML = `
+                        <span class="file-name">${file.name}</span>
+                        <span class="file-size">${formatFileSize(file.size)}</span>
+                        <button type="button" class="remove-file" onclick="removeFile(this, '${inputId}')">×</button>
+                    `;
+                    fileList.appendChild(fileItem);
+                });
+            }
+        }
+
+        // Hàm định dạng kích thước file
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Hàm xóa file
+        function removeFile(button, inputId) {
+            const fileItem = button.parentElement;
+            const fileList = fileItem.parentElement;
+            fileList.removeChild(fileItem);
+            
+            // Reset input file
+            const input = document.getElementById(inputId);
+            input.value = '';
+        }
+
+        // Khởi tạo các vùng kéo thả
+        setupDropZone('cccdFrontDropZone', 'cccdFront', 'cccdFrontFileList');
+        setupDropZone('cccdBackDropZone', 'cccdBack', 'cccdBackFileList');
+        setupDropZone('otherDocsDropZone', 'otherDocs', 'otherDocsFileList');
+
+        // Hàm validate form
+        function validateForm(event) {
+            event.preventDefault();
+            let isValid = true;
+            let firstError = null;
+
+            // Hàm hiển thị lỗi
+            function showError(elementId, message) {
+                const inputElement = document.getElementById(elementId);
+                const errorElement = document.getElementById(elementId + 'Error');
+                const formGroup = inputElement?.closest('.form-group');
+                
+                if (formGroup && errorElement) {
+                    formGroup.classList.add('error');
+                    errorElement.textContent = message;
+                    errorElement.style.display = 'block';
+                    
+                    // Lưu lỗi đầu tiên để scroll tới
+                    if (!firstError) {
+                        firstError = formGroup;
+                    }
+                }
+            }
+
+            // Hàm ẩn lỗi
+            function hideError(elementId) {
+                const inputElement = document.getElementById(elementId);
+                const errorElement = document.getElementById(elementId + 'Error');
+                const formGroup = inputElement?.closest('.form-group');
+                
+                if (formGroup && errorElement) {
+                    formGroup.classList.remove('error');
+                    errorElement.style.display = 'none';
+                }
+            }
+
+            // Xóa tất cả các thông báo lỗi cũ
+            document.querySelectorAll('.form-group').forEach(group => {
+                const input = group.querySelector('input') || group.querySelector('textarea');
+                const radio = group.querySelector('input[type="radio"]');
+                if (input && input.id) {
+                    hideError(input.id);
+                } else if (radio && radio.name) {
+                    hideError(radio.name);
+                }
+            });
+
+            // Validate Full Name
+            const fullName = document.getElementById('fullName').value.trim();
+            if (!fullName) {
+                showError('fullName', 'Vui lòng nhập họ và tên!');
+                isValid = false;
+            } else if (fullName.length < 2) {
+                showError('fullName', 'Họ và tên phải có ít nhất 2 ký tự!');
+                isValid = false;
+            } else {
+                // Kiểm tra viết hoa chữ đầu của mỗi từ
+                const nameWords = fullName.split(' ');
+                const hasInvalidCapitalization = nameWords.some(word => {
+                    // Bỏ qua các từ đặc biệt như "de", "van", "von", "le", "la", "di", "da"
+                    const specialWords = ['de', 'van', 'von', 'le', 'la', 'di', 'da'];
+                    if (specialWords.includes(word.toLowerCase())) return false;
+                    
+                    // Kiểm tra chữ cái đầu tiên của mỗi từ
+                    return word.charAt(0) !== word.charAt(0).toUpperCase();
+                });
+
+                if (hasInvalidCapitalization) {
+                    showError('fullName', 'Vui lòng viết hoa chữ cái đầu của mỗi từ trong họ tên!');
+                    isValid = false;
+                } else {
+                    hideError('fullName');
+                }
+            }
+
+            // Validate Email
+            const email = document.getElementById('email').value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email) {
+                showError('email', 'Vui lòng nhập email!');
+                isValid = false;
+            } else if (!emailRegex.test(email)) {
+                showError('email', 'Email không đúng định dạng!');
+                isValid = false;
+            }
+
+            // Validate Phone
+            const phone = document.getElementById('phone').value.trim();
+            const phoneRegex = /^0\d{9}$/;
+            if (!phone) {
+                showError('phone', 'Vui lòng nhập số điện thoại!');
+                isValid = false;
+            } else if (!phoneRegex.test(phone)) {
+                showError('phone', 'Số điện thoại phải bắt đầu bằng số 0 và có đúng 10 chữ số!');
+                isValid = false;
+            } else {
+                hideError('phone');
+            }
+
+            // Validate Tax Code
+            const taxCode = document.getElementById('taxCode').value.trim();
+            const taxCodeRegex = /^(\d{10}|\d{13})$/;
+            if (!taxCode) {
+                showError('taxCode', 'Vui lòng nhập mã số thuế!');
+                isValid = false;
+            } else if (!taxCodeRegex.test(taxCode)) {
+                showError('taxCode', 'Mã số thuế phải có 10 hoặc 13 chữ số!');
+                isValid = false;
+            }
+
+            // Validate ID Number
+            const idNumber = document.getElementById('idNumber').value.trim();
+            const idNumberRegex = /^(\d{9}|\d{12})$/;
+            if (!idNumber) {
+                showError('idNumber', 'Vui lòng nhập số CCCD/CMND!');
+                isValid = false;
+            } else if (!idNumberRegex.test(idNumber)) {
+                showError('idNumber', 'Số CCCD/CMND phải có 9 hoặc 12 chữ số!');
+                isValid = false;
+            } else {
+                hideError('idNumber');
+            }
+
+            // Validate Agent Type (Select dropdown)
+            const agentTypeSelect = document.getElementById('agentType');
+            const agentType = agentTypeSelect.value;
+
+            if (!agentType) {
+                showError('agentType', 'Vui lòng chọn loại hình đại lý đăng ký!');
+                isValid = false;
+            } else {
+                hideError('agentType');
+            }
+
+            // Validate Position
+            const position = document.getElementById('position').value.trim();
+            if (!position) {
+                showError('position', 'Vui lòng nhập chức vụ!');
+                isValid = false;
+            } else if (position.length < 2) {
+                showError('position', 'Chức vụ phải có ít nhất 2 ký tự!');
+                isValid = false;
+            }
+
+            // Validate Address
+            const address = document.getElementById('address').value.trim();
+            if (!address) {
+                showError('address', 'Vui lòng nhập địa chỉ!');
+                isValid = false;
+            } else if (address.length < 5) {
+                showError('address', 'Địa chỉ phải có ít nhất 5 ký tự!');
+                isValid = false;
+            }
+
+            // Validate CCCD Front
+            const cccdFrontFiles = document.getElementById('cccdFront').files;
+            if (cccdFrontFiles.length === 0) {
+                showError('cccdFront', 'Vui lòng tải lên ảnh CCCD mặt trước!');
+                isValid = false;
+            } else {
+                for (let file of cccdFrontFiles) {
+                    if (file.size > 5 * 1024 * 1024) { // 5MB
+                        showError('cccdFront', 'Kích thước file mặt trước không được vượt quá 5MB!');
+                        isValid = false;
+                        break;
+                    }
+                    if (!['image/jpeg', 'image/png'].includes(file.type)) {
+                        showError('cccdFront', 'Chỉ chấp nhận file ảnh JPG hoặc PNG cho mặt trước!');
+                        isValid = false;
+                        break;
+                    }
+                }
+            }
+
+            // Validate CCCD Back
+            const cccdBackFiles = document.getElementById('cccdBack').files;
+            if (cccdBackFiles.length === 0) {
+                showError('cccdBack', 'Vui lòng tải lên ảnh CCCD mặt sau!');
+                isValid = false;
+            } else {
+                for (let file of cccdBackFiles) {
+                    if (file.size > 5 * 1024 * 1024) { // 5MB
+                        showError('cccdBack', 'Kích thước file mặt sau không được vượt quá 5MB!');
+                        isValid = false;
+                        break;
+                    }
+                    if (!['image/jpeg', 'image/png'].includes(file.type)) {
+                        showError('cccdBack', 'Chỉ chấp nhận file ảnh JPG hoặc PNG cho mặt sau!');
+                        isValid = false;
+                        break;
+                    }
+                }
+            }
+
+            // Validate Other Docs (nếu có)
+            const otherDocsFiles = document.getElementById('otherDocs').files;
+            if (otherDocsFiles.length > 0) {
+                for (let file of otherDocsFiles) {
+                    if (file.size > 10 * 1024 * 1024) { // 10MB
+                        showError('otherDocs', 'Kích thước file tài liệu khác không được vượt quá 10MB!');
+                        isValid = false;
+                        break;
+                    }
+                    if (!['application/pdf', 'image/jpeg', 'image/png'].includes(file.type)) {
+                        showError('otherDocs', 'Chỉ chấp nhận file PDF, JPG hoặc PNG cho tài liệu khác!');
+                        isValid = false;
+                        break;
+                    }
+                }
+            }
+
+            if (isValid) {
+                // Tạo object chứa dữ liệu form
+                const formData = {
+                    fullName: document.getElementById('fullName').value.trim(),
+                    email: document.getElementById('email').value.trim(),
+                    phone: document.getElementById('phone').value.trim(),
+                    taxCode: document.getElementById('taxCode').value.trim(),
+                    idNumber: document.getElementById('idNumber').value.trim(),
+                    agentType: document.getElementById('agentType').value,
+                    position: document.getElementById('position').value.trim(),
+                    address: document.getElementById('address').value.trim(),
+                    files: {
+                        cccdFront: document.getElementById('cccdFront').files[0]?.name || 'Không có file',
+                        cccdBack: document.getElementById('cccdBack').files[0]?.name || 'Không có file',
+                        otherDocs: Array.from(document.getElementById('otherDocs').files).map(file => file.name)
+                    }
+                };
+
+                // Log dữ liệu ra console
+                console.log('=== DỮ LIỆU ĐĂNG KÝ ĐẠI LÝ ===');
+                console.log('Thông tin cá nhân:', {
+                    'Họ và tên': formData.fullName,
+                    'Email': formData.email,
+                    'Số điện thoại': formData.phone,
+                    'Mã số thuế': formData.taxCode
+                });
+                console.log('Thông tin đại lý:', {
+                    'Loại hình đại lý': formData.agentType,
+                    'Chức vụ': formData.position,
+                    'Địa chỉ': formData.address
+                });
+                console.log('Tài liệu đính kèm:', formData.files);
+                console.log('===========================');
+
+                // Hiển thị loading overlay
+                const loadingOverlay = document.querySelector('.loading-overlay');
+                loadingOverlay.classList.add('active');
+
+                // Chuyển đổi FormData thành JSON
+                const jsonData = {
+                    fullName: document.getElementById('fullName').value.trim(),
+                    email: document.getElementById('email').value.trim(),
+                    phone: document.getElementById('phone').value.trim(),
+                    taxCode: document.getElementById('taxCode').value.trim(),
+                    idNumber: document.getElementById('idNumber').value.trim(),
+                    agentType: document.getElementById('agentType').value,
+                    position: document.getElementById('position').value.trim(),
+                    address: capitalizeWords(document.getElementById('address').value.trim())
+                };
+
+                // Hàm viết hoa chữ cái đầu của mỗi từ
+                function capitalizeWords(str) {
+                    // Danh sách các từ không cần viết hoa
+                    const specialWords = ['phường', 'quận', 'huyện', 'thị xã', 'thành phố', 'tỉnh', 'số', 'đường', 'phố', 'ngõ', 'ngách', 'tổ', 'khu', 'khối'];
+                    
+                    // Tách chuỗi thành các từ
+                    return str.split(' ').map(word => {
+                        // Nếu từ nằm trong danh sách đặc biệt, giữ nguyên
+                        if (specialWords.includes(word.toLowerCase())) {
+                            return word.toLowerCase();
+                        }
+                        // Viết hoa chữ cái đầu, viết thường các chữ cái còn lại
+                        return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+                    }).join(' ');
+                }
+
+                fetch('https://reqres.in/api/users', {
+                    method: 'POST',
+                    body: JSON.stringify(jsonData),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': 'reqres-free-v1'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('API Response:', data);
+                    // Chỉ hiển thị thông báo thành công và reset form khi API trả về thành công
+                    showNotification('Dữ liệu đã được gửi thành công, chúng tôi sẽ gửi gửi hợp đồng điện tử vào email của bạn sau ít phút.', 'success', 5000);
+                    // Reset form
+                    document.getElementById('agentForm').reset();
+                    document.getElementById('cccdFrontFileList').innerHTML = '';
+                    document.getElementById('cccdBackFileList').innerHTML = '';
+                    document.getElementById('otherDocsFileList').innerHTML = '';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('Có lỗi xảy ra khi gửi dữ liệu. Vui lòng thử lại sau.', 'error');
+                })
+                .finally(() => {
+                    // Ẩn loading overlay
+                    loadingOverlay.classList.remove('active');
+                });
+            } else {
+                // Nếu có lỗi, scroll tới lỗi đầu tiên
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                showNotification('Vui lòng kiểm tra và điền đầy đủ các trường thông tin!', 'error');
+            }
+
+            return isValid;
+        }
+
+        // Hàm mở giao diện eKYC
+        function openEKYC() {
+            // Thay thế bằng SDK của nhà cung cấp eKYC
+            // Ví dụ với một SDK giả định:
+            const ekycConfig = {
+                apiKey: 'YOUR_API_KEY',
+                onSuccess: handleEKYCSuccess,
+                onError: handleEKYCError,
+                language: 'vi'
+            };
+            
+            // Gọi SDK eKYC
+            // EKYCProvider.initialize(ekycConfig);
+            // EKYCProvider.startVerification();
+        }
+
+        // Xử lý kết quả eKYC thành công
+        function handleEKYCSuccess(data) {
+            // Điền thông tin vào form
+            if (data.idNumber) {
+                document.getElementById('idNumber').value = data.idNumber;
+            }
+            if (data.fullName) {
+                document.getElementById('fullName').value = data.fullName;
+            }
+            if (data.address) {
+                document.getElementById('address').value = data.address;
+            }
+            if (data.dob) {
+                document.getElementById('dob').value = data.dob;
+            }
+            
+            // Hiển thị thông báo thành công
+            showNotification('Xác thực eKYC thành công!', 'success');
+        }
+
+        // Xử lý lỗi eKYC
+        function handleEKYCError(error) {
+            console.error('eKYC Error:', error);
+            showNotification('Xác thực eKYC thất bại. Vui lòng thử lại!', 'error');
+        }
+    </script>
+</body>
+</html>
