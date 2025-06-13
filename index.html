@@ -345,22 +345,24 @@
         const preview = document.getElementById(previewId);
         const dropZoneContent = dropZone.querySelector(".drop-zone-content");
 
-        // Mảng lưu trữ tên các file đã upload
-        let uploadedFiles = new Set();
+        // Khởi tạo Set để lưu trữ tên các file đã upload
+        if (!dropZone.uploadedFiles) {
+          dropZone.uploadedFiles = new Set();
+        }
 
         // Hàm kiểm tra file trùng lặp
         function isDuplicateFile(file) {
-          return uploadedFiles.has(file.name);
+          return dropZone.uploadedFiles.has(file.name);
         }
 
         // Hàm thêm file vào danh sách đã upload
         function addToUploadedFiles(file) {
-          uploadedFiles.add(file.name);
+          dropZone.uploadedFiles.add(file.name);
         }
 
         // Hàm xóa file khỏi danh sách đã upload
         function removeFromUploadedFiles(fileName) {
-          uploadedFiles.delete(fileName);
+          dropZone.uploadedFiles.delete(fileName);
         }
 
         // Xử lý sự kiện kéo thả
@@ -402,7 +404,7 @@
 
         // Xử lý khi click vào vùng kéo thả
         dropZone.addEventListener("click", (e) => {
-          if (e.target === dropZone || e.target.closest(".drop-zone-content")) {
+          if (  e.target.closest(".drop-zone")|| e.target.closest(".drop-zone-k")) {
             input.click();
           }
         });
@@ -430,13 +432,14 @@
           if (inputId === "cccdFront" || inputId === "cccdBack") {
             fileList.innerHTML = "";
             previewGrid.innerHTML = "";
-            uploadedFiles.clear();
+            dropZone.uploadedFiles.clear();
+            fileList.classList.remove("has-files");
           }
 
           let hasError = false;
           [...files].forEach((file) => {
-            // Kiểm tra file trùng lặp cho otherDocs
-            if (inputId === "otherDocs" && isDuplicateFile(file)) {
+            // Kiểm tra file trùng lặp
+            if (isDuplicateFile(file)) {
               showNotification(`File "${file.name}" đã tồn tại!`, "error");
               hasError = true;
               return;
@@ -455,11 +458,10 @@
             fileItem.innerHTML = `
               <span class="file-name">${file.name}</span>
               <span class="file-size">${formatFileSize(file.size)}</span>
-              <button type="button" class="remove-file" onclick="event.stopPropagation(); removeFile(this, '${inputId}', '${
-              file.name
-            }')">×</button>
+              <button type="button" class="remove-file" onclick="event.stopPropagation(); removeFile(this, '${inputId}', '${file.name}')">×</button>
             `;
             fileList.appendChild(fileItem);
+            fileList.classList.add("has-files");
 
             // Thêm file vào danh sách đã upload
             addToUploadedFiles(file);
@@ -534,23 +536,19 @@
         }
 
         // Xóa file khỏi danh sách đã upload
-        if (inputId === "otherDocs") {
-          const dropZone = document.getElementById(inputId + "DropZone");
-          const uploadedFiles = new Set(Array.from(dropZone.uploadedFiles || []));
-          uploadedFiles.delete(filename);
-          dropZone.uploadedFiles = Array.from(uploadedFiles);
-        }
+        const dropZone = document.getElementById(inputId + "DropZone");
+        dropZone.uploadedFiles.delete(filename);
 
         // Reset input file
         const fileInput = document.getElementById(inputId);
         fileInput.value = "";
 
-        // Chỉ hiển thị lại drop zone content khi không còn file nào
+        // Hiển thị lại drop zone content khi không còn file nào
         if (previewGrid.children.length === 0 && fileList.children.length === 0) {
           previewGrid.classList.remove("show");
-          const dropZone = document.getElementById(inputId + "DropZone");
           const dropZoneContent = dropZone.querySelector(".drop-zone-content");
           dropZoneContent.style.display = "flex";
+          fileList.classList.remove("has-files");
         }
       }
 
@@ -572,23 +570,19 @@
         }
 
         // Xóa file khỏi danh sách đã upload
-        if (inputId === "otherDocs") {
-          const dropZone = document.getElementById(inputId + "DropZone");
-          const uploadedFiles = new Set(Array.from(dropZone.uploadedFiles || []));
-          uploadedFiles.delete(filename);
-          dropZone.uploadedFiles = Array.from(uploadedFiles);
-        }
+        const dropZone = document.getElementById(inputId + "DropZone");
+        dropZone.uploadedFiles.delete(filename);
 
         // Reset input file
         const fileInput = document.getElementById(inputId);
         fileInput.value = "";
 
-        // Chỉ hiển thị lại drop zone content khi không còn file nào
+        // Hiển thị lại drop zone content khi không còn file nào
         if (previewGrid.children.length === 0 && fileList.children.length === 0) {
           previewGrid.classList.remove("show");
-          const dropZone = document.getElementById(inputId + "DropZone");
           const dropZoneContent = dropZone.querySelector(".drop-zone-content");
           dropZoneContent.style.display = "flex";
+          fileList.classList.remove("has-files");
         }
       }
 

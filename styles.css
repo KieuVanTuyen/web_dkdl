@@ -1077,26 +1077,33 @@ select:focus {
   color: #6b7280;
   font-size: 24px;
 }
-
+.file-icon {
+  padding-left: 10px;
+}
 .file-list {
   margin-top: 10px;
   width: 100%;
+  /* min-height: 48px; */
   max-height: 150px;
   overflow-y: auto;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #d4d4d4;
   border-radius: 4px;
+  padding: 0;
+}
+.file-list.has-files {
   padding: 8px;
 }
-
 .file-item {
   display: flex;
   align-items: center;
   padding: 4px 8px;
-  background: #f9fafb;
+  background: #ececec;
   border-radius: 4px;
   margin-bottom: 4px;
 }
-
+.file-list.has-files {
+        padding: 8px;
+      }
 .file-item:last-child {
   margin-bottom: 0;
 }
