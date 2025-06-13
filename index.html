@@ -235,6 +235,9 @@
             </div>
             <div class="file-list" id="otherDocsFileList"></div>
             <div class="error-message" id="otherDocsError"></div>
+            <button type="button" class="upload-button" onclick="document.getElementById('otherDocs').click()">
+              <i class="fas fa-upload"></i> Chọn file
+            </button>
           </div>
         </div>
 
@@ -282,7 +285,7 @@
     <!-- Modal for image preview -->
     <div id="imagePreviewModal" class="image-preview-modal">
       <div class="modal-content">
-        <span class="close-modal">&times;</span>
+        <button class="close-modal">&times;</button>
         <img id="previewImage" src="" alt="Preview" />
       </div>
     </div>
@@ -342,6 +345,24 @@
         const preview = document.getElementById(previewId);
         const dropZoneContent = dropZone.querySelector(".drop-zone-content");
 
+        // Mảng lưu trữ tên các file đã upload
+        let uploadedFiles = new Set();
+
+        // Hàm kiểm tra file trùng lặp
+        function isDuplicateFile(file) {
+          return uploadedFiles.has(file.name);
+        }
+
+        // Hàm thêm file vào danh sách đã upload
+        function addToUploadedFiles(file) {
+          uploadedFiles.add(file.name);
+        }
+
+        // Hàm xóa file khỏi danh sách đã upload
+        function removeFromUploadedFiles(fileName) {
+          uploadedFiles.delete(fileName);
+        }
+
         // Xử lý sự kiện kéo thả
         ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
           dropZone.addEventListener(eventName, preventDefaults, false);
@@ -381,7 +402,6 @@
 
         // Xử lý khi click vào vùng kéo thả
         dropZone.addEventListener("click", (e) => {
-          // Chỉ mở dialog chọn file khi click vào vùng trống hoặc drop zone content
           if (e.target === dropZone || e.target.closest(".drop-zone-content")) {
             input.click();
           }
@@ -401,6 +421,7 @@
             `#${inputId}DropZone .drop-zone-content`
           );
           const fileInput = document.getElementById(inputId);
+          const errorElement = document.getElementById(inputId + "Error");
 
           // Ẩn drop zone content khi bắt đầu thêm file mới
           dropZoneContent.style.display = "none";
@@ -409,9 +430,18 @@
           if (inputId === "cccdFront" || inputId === "cccdBack") {
             fileList.innerHTML = "";
             previewGrid.innerHTML = "";
+            uploadedFiles.clear();
           }
 
+          let hasError = false;
           [...files].forEach((file) => {
+            // Kiểm tra file trùng lặp cho otherDocs
+            if (inputId === "otherDocs" && isDuplicateFile(file)) {
+              showNotification(`File "${file.name}" đã tồn tại!`, "error");
+              hasError = true;
+              return;
+            }
+
             // Nếu là CCCD/CMND và đã có file, bỏ qua file mới
             if (
               (inputId === "cccdFront" || inputId === "cccdBack") &&
@@ -430,6 +460,9 @@
             }')">×</button>
             `;
             fileList.appendChild(fileItem);
+
+            // Thêm file vào danh sách đã upload
+            addToUploadedFiles(file);
 
             // Hiển thị preview cho ảnh và PDF
             if (file.type.startsWith("image/")) {
@@ -465,6 +498,11 @@
               reader.readAsDataURL(file);
             }
           });
+
+          // Nếu có lỗi, reset input file
+          if (hasError) {
+            fileInput.value = "";
+          }
         }
       }
 
@@ -479,7 +517,7 @@
 
       // Hàm xóa preview item
       function removePreviewItem(button, inputId, filename) {
-        event.stopPropagation(); // Ngăn chặn sự kiện click lan truyền
+        event.stopPropagation();
         const previewItem = button.parentElement;
         const previewGrid = previewItem.parentElement;
         previewGrid.removeChild(previewItem);
@@ -495,15 +533,20 @@
           }
         }
 
+        // Xóa file khỏi danh sách đã upload
+        if (inputId === "otherDocs") {
+          const dropZone = document.getElementById(inputId + "DropZone");
+          const uploadedFiles = new Set(Array.from(dropZone.uploadedFiles || []));
+          uploadedFiles.delete(filename);
+          dropZone.uploadedFiles = Array.from(uploadedFiles);
+        }
+
         // Reset input file
         const fileInput = document.getElementById(inputId);
         fileInput.value = "";
 
         // Chỉ hiển thị lại drop zone content khi không còn file nào
-        if (
-          previewGrid.children.length === 0 &&
-          fileList.children.length === 0
-        ) {
+        if (previewGrid.children.length === 0 && fileList.children.length === 0) {
           previewGrid.classList.remove("show");
           const dropZone = document.getElementById(inputId + "DropZone");
           const dropZoneContent = dropZone.querySelector(".drop-zone-content");
@@ -513,7 +556,7 @@
 
       // Hàm xóa file
       function removeFile(button, inputId, filename) {
-        event.stopPropagation(); // Ngăn chặn sự kiện click lan truyền
+        event.stopPropagation();
         const fileItem = button.parentElement;
         const fileList = fileItem.parentElement;
         fileList.removeChild(fileItem);
@@ -528,15 +571,20 @@
           }
         }
 
+        // Xóa file khỏi danh sách đã upload
+        if (inputId === "otherDocs") {
+          const dropZone = document.getElementById(inputId + "DropZone");
+          const uploadedFiles = new Set(Array.from(dropZone.uploadedFiles || []));
+          uploadedFiles.delete(filename);
+          dropZone.uploadedFiles = Array.from(uploadedFiles);
+        }
+
         // Reset input file
         const fileInput = document.getElementById(inputId);
         fileInput.value = "";
 
         // Chỉ hiển thị lại drop zone content khi không còn file nào
-        if (
-          previewGrid.children.length === 0 &&
-          fileList.children.length === 0
-        ) {
+        if (previewGrid.children.length === 0 && fileList.children.length === 0) {
           previewGrid.classList.remove("show");
           const dropZone = document.getElementById(inputId + "DropZone");
           const dropZoneContent = dropZone.querySelector(".drop-zone-content");
@@ -996,17 +1044,105 @@
       // Hàm mở preview ảnh
       function openImagePreview(src) {
         const modal = document.getElementById("imagePreviewModal");
+        const modalContent = modal.querySelector(".modal-content");
+        
+        // Đảm bảo modal có cấu trúc đúng cho ảnh
+        modalContent.innerHTML = `
+          <button class="close-modal">&times;</button>
+          <img id="previewImage" src="" alt="Preview">
+        `;
+        modalContent.className = "modal-content image-modal-content";
+        
         const previewImage = document.getElementById("previewImage");
         previewImage.src = src;
         modal.style.display = "block";
+
+        // Thêm event listener cho nút đóng
+        const closeButton = modalContent.querySelector(".close-modal");
+        closeButton.addEventListener("click", function() {
+          modal.style.display = "none";
+        });
       }
 
-      // Đóng modal khi click vào nút đóng
-      document
-        .querySelector(".close-modal")
-        .addEventListener("click", function () {
-          document.getElementById("imagePreviewModal").style.display = "none";
+      // Hàm mở preview PDF
+      function openPDFPreview(pdfData) {
+        const modal = document.getElementById("imagePreviewModal");
+        const modalContent = modal.querySelector(".modal-content");
+
+        // Thay đổi nội dung modal để hiển thị PDF
+        modalContent.innerHTML = `
+          <button class="close-modal">&times;</button>
+          <div id="pdfContainer" style="position:absolute;width: 100%; height: 85vh; overflow-y: auto; box-sizing: border-box;"></div>
+        `;
+        modalContent.className = "modal-content pdf-modal-content";
+
+        modal.style.display = "block";
+
+        // Thêm event listener cho nút đóng
+        const closeButton = modalContent.querySelector(".close-modal");
+        closeButton.addEventListener("click", function() {
+          modal.style.display = "none";
         });
+
+        // Khởi tạo PDF.js
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+          "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+        // Load PDF
+        pdfjsLib
+          .getDocument(pdfData)
+          .promise.then(function (pdf) {
+            const container = document.getElementById("pdfContainer");
+            container.innerHTML = ""; // Clear container
+
+            // Render tất cả các trang
+            const numPages = pdf.numPages;
+            for (let pageNum = 1; pageNum <= numPages; pageNum++) {
+              pdf.getPage(pageNum).then(function (page) {
+                // Tính toán scale dựa trên kích thước container
+                const containerWidth = container.clientWidth - 40; // Trừ padding
+                const viewport = page.getViewport({ scale: 1 });
+
+                // Tính toán scale để PDF vừa với container
+                const scale = containerWidth / viewport.width;
+                const scaledViewport = page.getViewport({ scale: scale });
+
+                // Tạo canvas cho từng trang
+                const canvas = document.createElement("canvas");
+                const context = canvas.getContext("2d");
+                canvas.height = scaledViewport.height;
+                canvas.width = scaledViewport.width;
+                canvas.style.marginBottom = "10px"; // Khoảng cách giữa các trang
+
+                const renderContext = {
+                  canvasContext: context,
+                  viewport: scaledViewport,
+                };
+
+                // Render trang
+                page.render(renderContext).promise.then(function () {
+                  // Tạo wrapper div để căn giữa canvas
+                  const wrapper = document.createElement("div");
+                  wrapper.style.display = "flex";
+                  wrapper.style.justifyContent = "center";
+                  wrapper.style.alignItems = "center";
+                  wrapper.style.width = "100%";
+                  wrapper.appendChild(canvas);
+                  container.appendChild(wrapper);
+                });
+              });
+            }
+          })
+          .catch(function (error) {
+            console.error("Error loading PDF:", error);
+            const container = document.getElementById("pdfContainer");
+            container.innerHTML = `
+              <div style="color: white; text-align: center;">
+                Không thể hiển thị PDF. <a href="${pdfData}" download style="color: #4CAF50; text-decoration: underline;">Nhấn vào đây để tải xuống</a>
+              </div>
+            `;
+          });
+      }
 
       // Đóng modal khi click bên ngoài ảnh
       document
@@ -1020,92 +1156,10 @@
       // Đóng modal khi nhấn phím ESC
       document.addEventListener("keydown", function (e) {
         if (e.key === "Escape") {
-          document.getElementById("imagePreviewModal").style.display = "none";
+          const modal = document.getElementById("imagePreviewModal");
+          modal.style.display = "none";
         }
       });
-
-      // Hàm mở preview PDF
-      function openPDFPreview(pdfData) {
-        const modal = document.getElementById("imagePreviewModal");
-
-        // Thay đổi nội dung modal để hiển thị PDF
-        modal.querySelector(".modal-content").innerHTML = `
-          <span class="close-modal">&times;</span>
-          <div id="pdfContainer" style="width: 90vw; height: 90vh; overflow: auto; display: flex; justify-content: center; align-items: center;"></div>
-        `;
-
-        modal.style.display = "block";
-
-        // Khởi tạo PDF.js
-        pdfjsLib.GlobalWorkerOptions.workerSrc =
-          "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-
-        // Load PDF
-        pdfjsLib
-          .getDocument(pdfData)
-          .promise.then(function (pdf) {
-            const container = document.getElementById("pdfContainer");
-            container.innerHTML = ""; // Clear container
-
-            // Render first page
-            pdf.getPage(1).then(function (page) {
-              // Tính toán scale dựa trên kích thước container
-              const containerWidth = container.clientWidth - 40; // Trừ padding
-              const containerHeight = container.clientHeight - 40;
-              const viewport = page.getViewport({ scale: 1 });
-
-              // Tính toán scale để PDF vừa với container
-              const scaleX = containerWidth / viewport.width;
-              const scaleY = containerHeight / viewport.height;
-              const scale = Math.min(scaleX, scaleY);
-
-              const scaledViewport = page.getViewport({ scale: scale });
-
-              const canvas = document.createElement("canvas");
-              const context = canvas.getContext("2d");
-              canvas.height = scaledViewport.height;
-              canvas.width = scaledViewport.width;
-
-              const renderContext = {
-                canvasContext: context,
-                viewport: scaledViewport,
-              };
-
-              page.render(renderContext).promise.then(function () {
-                // Tạo wrapper div để căn giữa canvas
-                const wrapper = document.createElement("div");
-                wrapper.style.display = "flex";
-                wrapper.style.justifyContent = "center";
-                wrapper.style.alignItems = "center";
-                wrapper.style.width = "100%";
-                wrapper.style.height = "100%";
-                wrapper.appendChild(canvas);
-                container.appendChild(wrapper);
-              });
-            });
-          })
-          .catch(function (error) {
-            console.error("Error loading PDF:", error);
-            const container = document.getElementById("pdfContainer");
-            container.innerHTML = `
-            <div style="color: white; text-align: center; padding: 20px;">
-              Không thể hiển thị PDF. <a href="${pdfData}" download style="color: #4CAF50; text-decoration: underline;">Nhấn vào đây để tải xuống</a>
-            </div>
-          `;
-          });
-
-        // Thêm lại event listener cho nút đóng
-        modal
-          .querySelector(".close-modal")
-          .addEventListener("click", function () {
-            modal.style.display = "none";
-            // Reset lại nội dung modal về trạng thái ban đầu
-            modal.querySelector(".modal-content").innerHTML = `
-            <span class="close-modal">&times;</span>
-            <img id="previewImage" src="" alt="Preview">
-          `;
-          });
-      }
     </script>
   </body>
 </html>
